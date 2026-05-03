@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netodep-wait
+  labels:
+    app: netowait-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netowait-app
+  template:
+    metadata:
+      labels:
+        app: netowait-app
+    spec:
+      initContainers:
+      - name: wait-service
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nslookup netowait-svc; do echo "Waiting for create service netowait-svc..."; sleep 4; done; echo "Service netowait-srv is Ok!!";']
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+          name: nginx-listen

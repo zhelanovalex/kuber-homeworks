@@ -1,0 +1,10 @@
+apiVersion : v1
+kind: Pod
+metadata:
+  name: netology-mul
+  labels:
+    app  : neto-mul
+spec:
+  containers:
+    - name : container-netomul
+      image: wbitt/network-multitool

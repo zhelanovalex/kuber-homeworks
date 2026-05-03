@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: netowait-svc
+  labels:
+     app  :  netowait-app
+spec:
+  selector:
+    app: netowait-app
+  ports:
+    - name      : nginx-listen
+      protocol  : TCP
+      port      : 18080
+      targetPort: 80
