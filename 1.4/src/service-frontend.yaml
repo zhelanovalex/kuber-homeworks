@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-frontend
+  labels:
+     app:  frontend-app
+spec:
+  selector:
+    app: frontend-app
+  type: ClusterIP 
+  ports:
+    - name      : nginx-listen
+      protocol  : TCP
+      port      : 9001
+      targetPort: 80
