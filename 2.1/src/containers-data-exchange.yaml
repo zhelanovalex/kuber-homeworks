@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-exchange
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netopv-app
+  template:
+    metadata:
+      labels:
+        app: netopv-app
+    spec:
+      containers:
+      - name: neto-busy
+        image: busybox
+        command: ["sh", "-c"] 
+        args: ["while true; do echo $(date) >> /kub_vol/dat_out; sleep 5; done"]
+        volumeMounts:
+        - name: vol-shara
+          mountPath: /kub_vol
+      - name: neto-mult
+        image: wbitt/network-multitool:latest
+        command: ["sh", "-c"]
+        args: ["tail -f /kub_vol/dat_out"]
+        volumeMounts:
+        - name: vol-shara
+          mountPath: /kub_vol
+      volumes:
+      - name: vol-shara
+        emptyDir: {} 

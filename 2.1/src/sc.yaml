@@ -1,0 +1,67 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: neto-st-class
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: neto-pv-kube
+spec:
+  storageClassName: neto-st-class
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /kub_vol
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neto-scpvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: neto-st-class
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-exchange-sc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: netosc-app
+  template:
+    metadata:
+      labels:
+        app: netosc-app
+    spec:
+      containers:
+      - name: neto-busy
+        image: busybox
+        command: ["sh", "-c"] 
+        args: ["while true; do echo $(date) >> /kub_vol/dat_out; sleep 5; done"]
+        volumeMounts:
+        - name: scvol-shara
+          mountPath: /kub_vol
+      - name: neto-mult
+        image: wbitt/network-multitool:latest
+        command: ["sh", "-c"]
+        args: ["tail -f /kub_vol/dat_out"]
+        volumeMounts:
+        - name: scvol-shara
+          mountPath: /kub_vol
+      volumes:
+      - name: scvol-shara
+        persistentVolumeClaim:
+          claimName: neto-scpvc

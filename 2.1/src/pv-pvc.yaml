@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: neto-pv-kube
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /kub_vol
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neto-pvc
+spec:
+  volumeName: neto-pv-kube
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 800Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-exchange-pvc
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: netopvc-app
+  template:
+    metadata:
+      labels:
+        app: netopvc-app
+    spec:
+      containers:
+      - name: neto-busy
+        image: busybox
+        command: ["sh", "-c"] 
+        args: ["while true; do echo $(date) >> /kub_vol/dat_out; sleep 5; done"]
+        volumeMounts:
+        - name: pvol-shara
+          mountPath: /kub_vol
+      - name: neto-mult
+        image: wbitt/network-multitool:latest
+        command: ["sh", "-c"]
+        args: ["tail -f /kub_vol/dat_out"]
+        volumeMounts:
+        - name: pvol-shara
+          mountPath: /kub_vol
+      volumes:
+      - name: pvol-shara
+        persistentVolumeClaim:
+          claimName: neto-pvc
