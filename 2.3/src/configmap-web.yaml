@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-conf-map
+  namespace: default 
+data:
+  MULT_HTTP_PORT: "8080"
+  MULT_HTTPS_PORT: "18443"
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Neto ConfigMap test!!!!!</title> 
+    </head>
+    <body>
+      <h1>Kubernetes still alive!!!!!</h1> 
+    </body>
+    </html>
