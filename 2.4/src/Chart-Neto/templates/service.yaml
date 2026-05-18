@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-netoservice
+  labels:
+     app: {{ .Release.Name }}-netodep 
+spec:
+  selector:
+    app: {{ .Release.Name }}-netodep
+  type: ClusterIP 
+  ports:
+    - name      : multi-listens
+      protocol  : TCP
+      port: {{ .Values.svc.port}}
+      targetPort: {{ .Values.svc.targetPort }}

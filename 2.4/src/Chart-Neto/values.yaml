@@ -1,0 +1,13 @@
+# Default Values for my Helm Chart
+
+replicas: 1
+
+container:
+  name: multitool
+  image: wbitt/network-multitool:latest
+  env:
+      name: "HTTP_PORT"
+      value: "8080"
+svc:
+  port: 10080
+  targetPort: 8080

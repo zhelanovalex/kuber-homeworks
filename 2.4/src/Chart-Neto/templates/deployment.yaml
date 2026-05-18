@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-netodep
+  labels:
+    app: {{ .Release.Name }}-netodep
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-netodep
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-netodep
+    spec:
+      containers:
+      - name: {{ .Values.container.name }}
+        image: {{ .Values.container.image }}
+        env:
+        - name: "{{ .Values.container.env.name }}"
+          value: "{{ .Values.container.env.value }}"
